@@ -142,6 +142,6 @@ PROJECT WORK
   and NIST controls will help security people to understand what was inteneded during
   the C&A process.
 
-- Help verify the configurations against SSG OpenSCAP Content
+- Help verify the configurations against SSG OpenSCAP Content.
 
 - Add updates to with new security features in RHEL 6.5 and newer
