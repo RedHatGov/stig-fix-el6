@@ -8,6 +8,6 @@ echo '===================================================='
 `grep -q pam_rhosts_auth /etc/pam.d/*`
 if [ $? -gt 0 ]; then
 	for NAME in `grep -l pam_rhosts_auth /etc/pam.d/*`; do
-		sed -i '/pam_rhosts_auth/d' NAME
+		sed -i '/pam_rhosts_auth/d' $NAME
 	done
 fi
