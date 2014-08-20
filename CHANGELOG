@@ -1,0 +1,49 @@
+* Mon Sep 16 2013 - fcaviggi (at) redhat.com
+- Original Build
+* Thu Sep 26 2013 - fcaviggi (at) redhat.com
+- Fixed PAM Configuration
+- Added 'sshusers' group for SSH limiting
+- Added RPM dependancy on ntp
+* Fri Sep 27 2013 - fcaviggi (at) redhat.com
+- Added dependancy on openswan
+* Mon Sep 30 2013 - fcaviggi (at) redhat.com
+- Modified system-auth configuration for session pam_lastlog.so
+- Standardized /etc/issue
+- Modified system-auth configuration for password pam_cracklib.so
+- Removed dependancy for dracut-fips, enabled downloading it in /opt/stig-fix/manual/gen000588-fips140-2.sh
+* Tue Oct 01 2013 - fcaviggi (at) redhat.com
+- Modified audit.rules to match SSG rules better
+* Tue Oct 07 2013 - fcaviggi (at) redhat.com
+- Fixed audit.rules to set system as immutable (-e 2) until reboot
+* Tue Dec 13 2013 - fcaviggi (at) redhat.com
+- Removed messagebus from disabled service due to X requirement
+- Disabled ip6tables due to disablement of IPv6 in kernel configurations
+* Tue Dec 17 2013 - fcaviggi (at) redhat.com
+- Fixed pam_faillock for GDM use
+* Tue Dec 18 2013 - fcaviggi (at) redhat.com
+- Added netfs to disabled services list
+- Updated sshd_configuration (Uncommented some defaults) and X11Forwarding to no by defualt
+* Mon Feb 03 2014 - fcaviggi (at) redhat.com
+- Fixed Audit rules
+* Tue Apr 02 2014 - fcaviggi (at) redhat.com
+- Updated documentation, added isso group for Auditors
+* Wed May 14 2014 - fcaviggi (at) redhat.com
+- Updated scripts to better comlpy with DISA STIG
+* Wed May 15 2014 - fcaviggi (at) redhat.com
+- Set BASE_DIR variable to '/opt/stig-fix' in apply.sh
+* Wed May 26 2014 - fcaviggi (at) redhat.com
+- Added toggle_ipv6.sh script and micellenous updates
+* Sat Jul 05 2014 - fcaviggi (at) redhat.com
+- Added setting in sshd_config to allow Kerberos passwords
+- Added configuration file for logrotate
+* Wed Jul 16 2014 - fcaviggi (at) redhat.com
+- Fixed typo in audit.rules - privelged changed to privileged
+* Wed Jul 23 2014 - fcaviggi (at) redhat.com
+- Removed try_first_pass from pam_cracklib.so in system-auth-local and password-auth-local
+- Fixed variable in cat2/gen0021000.sh
+* Thu Jul 24 2014 - fcaviggi (at) redhat.com
+- Fixed quotation issue around shells that was breaking sftp in cat2/gen002140.sh
+* Fri Jul 25 2014 - fcaviggi (at) redhat.com
+- Moved TCP_WRAPPERS configuration into 'config' directory, deleted cat2/gen006620.sh
+- Added the ability to checkpoint configuration with checkpoint.sh script, aliased to /sbin/stig-fix-checkpoint
+- Checkpoint prevents apply.sh from placing default configurations over a configured system
