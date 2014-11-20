@@ -15,6 +15,8 @@
 #  - Updated by Shannon Mitchell(shannon.mitchell@fusiontechnology-llc.com)
 # on 05-Feb-2012 to check permissions before running chmod and to allow for 
 # "less permissive" permissions.
+# superceded by RHEL-06-000222 
+# luke.brisk@boeing.com or luke.brisk@gmail.com
 
 #######################DISA INFORMATION###############################
 #Group ID (Vulid): V-848
@@ -45,25 +47,25 @@
 #######################DISA INFORMATION###############################
 
 #Global Variables#
-PDI=GEN005100
+#PDI=GEN005100
 
 #Start-Lockdown
-if [ -a "/usr/sbin/in.tftpd" ]; then
-echo '==================================================='
-echo ' Patching GEN005100: TFTPD Permissions'
-echo '==================================================='
+# if [ -a "/usr/sbin/in.tftpd" ]; then
+# echo '==================================================='
+# echo ' Patching GEN005100 see RHEL-06-000222
+# echo '==================================================='
 
-    # Pull the actual permissions
-    FILEPERMS=`stat -L --format='%04a' /usr/sbin/in.tftpd`
+    #ull the actual permissions
+    # FILEPERMS=`stat -L --format='%04a' /usr/sbin/in.tftpd`
 
-    # Break the actual file octal permissions up per entity
-    FILESPECIAL=${FILEPERMS:0:1}
-    FILEOWNER=${FILEPERMS:1:1}
-    FILEGROUP=${FILEPERMS:2:1}
-    FILEOTHER=${FILEPERMS:3:1}
+    #reak the actual file octal permissions up per entity
+    # FILESPECIAL=${FILEPERMS:0:1}
+    # FILEOWNER=${FILEPERMS:1:1}
+    # FILEGROUP=${FILEPERMS:2:1}
+    # FILEOTHER=${FILEPERMS:3:1}
 
-    # Run check by 'and'ing the unwanted mask(7022)
-    if [ $(($FILESPECIAL&7)) != "0" ] || [ $(($FILEOWNER&0)) != "0" ] || [ $(($FILEGROUP&2)) != "0" ] || [ $(($FILEOTHER&2)) != "0" ]; then
-        chmod u-s,g-ws,o-wt /usr/sbin/in.tftpd
-    fi
-fi
+   #Run check by 'and'ing the unwanted mask(7022)
+    # if [ $(($FILESPECIAL&7)) != "0" ] || [ $(($FILEOWNER&0)) != "0" ] || [ $(($FILEGROUP&2)) != "0" ] || [ $(($FILEOTHER&2)) != "0" ]; then
+        # chmod u-s,g-ws,o-wt /usr/sbin/in.tftpd
+    # fi
+# fi
