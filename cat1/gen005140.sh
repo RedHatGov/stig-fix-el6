@@ -14,7 +14,8 @@
 #
 #  - Updated by Shannon Mitchell(shannon.mitchell@fusiontechnology-llc.com)
 # on 05-Feb-2012 to check if the service is enabled before disabling it.
-
+# Superceded by RHEL-06-000222 - Luke "Brisk Oh" Brisk
+# luke.brisk@boeing.com or luke.brisk@gmail.com
 
 #######################DISA INFORMATION###############################
 #Group ID (Vulid): V-4695
@@ -44,15 +45,15 @@
 #######################DISA INFORMATION###############################
 
 #Global Variables#
-PDI=GEN005140
+#PDI=GEN005140
 
 #Start-Lockdown
 
-chkconfig --list tftp 2>/dev/null | grep 'on' > /dev/null
-if [ $? -eq 0 ]; then
-echo '==================================================='
-echo ' Patching GEN005140: Disable TFTP Daemon'
-echo '==================================================='
-	chkconfig tftp off
-	service xinetd restart &>/dev/null
-fi
+# chkconfig --list tftp 2>/dev/null | grep 'on' > /dev/null
+# if [ $? -eq 0 ]; then
+# echo '==================================================='
+# echo ' GEN005140 See RHEL-06-000222'
+# echo '==================================================='
+	# chkconfig tftp off
+	# service xinetd restart &>/dev/null
+# fi
