@@ -4,13 +4,13 @@
 ## Protocol version 1 is not used, nor will Protocol version 1 compatibility 
 ## mode be used.
 echo '==================================================='
-echo ' Patching GEN005500: Disallow SSH Protocol version 1'
+echo ' GEN005500 see RHEL06000227'
 echo '==================================================='
-if [ `grep -c "^Protocol" /etc/ssh/sshd_config` -gt 0 ]; then
-	sed -i "/^Protocol/ c\Protocol 2" /etc/ssh/sshd_config
-else
-	echo "Protocol 2" >> /etc/ssh/sshd_config
-fi
+#if [ `grep -c "^Protocol" /etc/ssh/sshd_config` -gt 0 ]; then
+#	sed -i "/^Protocol/ c\Protocol 2" /etc/ssh/sshd_config
+#else
+#	echo "Protocol 2" >> /etc/ssh/sshd_config
+#fi
 
 if [ `grep -c "^Ciphers" /etc/ssh/sshd_config` -gt 0 ]; then
 	sed -i "/Ciphers/d" /etc/ssh/sshd_config
