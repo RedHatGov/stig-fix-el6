@@ -14,7 +14,8 @@
 #
 #  - Updated by Shannon Mitchell(shannon.mitchell@fusiontechnology-llc.com)
 # on 13-Feb-2012 to add the option in the global section.
-
+#  - Updated by Luke "Brisk-Oh" Brisk luke.brisk@boeing.com or luke.brisk@gmail.com
+# on 27-Oct-2014 to add the option in the global section.
 
 #######################DISA INFORMATION###############################
 #Group ID (Vulid): V-22500
@@ -40,20 +41,20 @@
 #######################DISA INFORMATION###############################
 
 #Global Variables#
-PDI=GEN006230
+# PDI=GEN006230
 
 #Start-Lockdown
-if [ -e /etc/samba/smb.conf ]; then
-	echo '==================================================='
-	echo ' Patching GEN006150: Enable Samba Encryption'
-	echo '==================================================='
+# if [ -e /etc/samba/smb.conf ]; then
+	# echo '==================================================='
+	# echo ' Patching GEN006150: Enable Samba Encryption'
+	# echo '==================================================='
 
-	ENCRYPTPASS=$( grep -i 'encrypt passwords' /etc/samba/smb.conf | wc -l )
+	# ENCRYPTPASS=$( grep -i 'encrypt passwords' /etc/samba/smb.conf | wc -l )
 
-	if [ $ENCRYPTPASS -eq 0 ];  then
-		# Add to global section
-		sed -i 's/\[global\]/\[global\]\n\n\tencrypt passwords = yes/g' /etc/samba/smb.conf
-	else
-		sed -i 's/[[:blank:]]*encrypt[[:blank:]]passwords[[:blank:]]*=[[:blank:]]*no/        encrypt passwords = yes/g' /etc/samba/smb.conf
-	fi
-fi
+	# if [ $ENCRYPTPASS -eq 0 ];  then
+		#Add to global section
+		# sed -i 's/\[global\]/\[global\]\n\n\tencrypt passwords = yes/g' /etc/samba/smb.conf
+	# else
+		# sed -i 's/[[:blank:]]*encrypt[[:blank:]]passwords[[:blank:]]*=[[:blank:]]*no/        encrypt passwords = yes/g' /etc/samba/smb.conf
+	# fi
+# fi
