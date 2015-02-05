@@ -10,7 +10,7 @@
 %define DATE		/bin/date +\%s
 %define HDATE		/bin/date -Iminute
 %define SCRIPT_NAME	stig-fix
-%define PKG_VERSION	1.7.9
+%define PKG_VERSION	1.8.1
 %define PKG_RELEASE	el6
 
 %define BASE_DIR	/opt/%{SCRIPT_NAME}

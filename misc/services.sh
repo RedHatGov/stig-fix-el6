@@ -16,7 +16,7 @@ for SRV in $OFFSRV; do
 done
 
 ### Enable Services
-ONSRV="auditd postfix iptables rsyslog"
+ONSRV="postfix iptables"
 
 for SRV in $ONSRV; do
 	if [ `/sbin/chkconfig --list | grep -c $SRV` -gt 0 ]; then
@@ -25,6 +25,12 @@ for SRV in $ONSRV; do
 		/sbin/service $SRV start &> /dev/null
 	fi
 done
+
+# Auditing and Syslog should always be on...
+/sbin/chkconfig --level 0123456 auditd on &> /dev/null
+/sbin/service auditd start &> /dev/null
+/sbin/chkconfig --level 0123456 rsyslog on &> /dev/null
+/sbin/service rsyslog start &> /dev/null
 
 ### IPv6 - Requires ip6tables
 `grep NETWORKING_IPV6 /etc/sysconfig/network | grep -q yes`

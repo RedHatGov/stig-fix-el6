@@ -52,3 +52,8 @@
 * Sun Oct 12 2014 - fcaviggi (at) redhat.com
 - Various fixes to scripts (password length cat2/GEN000580.sh)
 - Fixed typo in etc/krb5.conf file
+* Fri Dec 19 2014 - fcaviggi (at) redhat.com
+- Merged SCAP Security Guide (SSG) Scripts - Thanks to Shawn Wells
+- Updated directory structure for hardening scripts
+* Sat Dec 20 2014 - fcaviggi (at) redhat.com
+- Added misc/ctrlaltdel.sh

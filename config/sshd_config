@@ -144,4 +144,4 @@ Compression delayed
 KerberosAuthentication no
 # FIPS 140-2 Encryption (Highest Level using Counter Mode)
 Ciphers aes256-ctr,aes192-ctr,aes128-ctr,aes256-cbc,aes192-cbc,aes128-cbc
-MACs hmac-sha1
+MACs hmac-sha2-512,hmac-sha2-256,hmac-ripemd160,hmac-sha1-96

@@ -287,17 +287,14 @@ cp -f ./config/smb.conf /etc/samba/smb.conf
 #### AUDITING RULES
 cp -f ./config/auditd.conf /etc/audit/auditd.conf
 if [ "$ARCH" == "x86_64" ]; then
-	if [ -d /etc/audit/rules.d ]; then
-		cp -f ./config/audit.rules /etc/audit/rules.d/audit.rules	
-	else
-		cp -f ./config/audit.rules /etc/audit/audit.rules
-	fi
+	cp -f ./config/audit.rules /etc/audit/audit.rules
 else
-	if [ -d /etc/audit/rules.d ]; then
-		grep -v 'b64' ./config/audit.rules > /etc/audit/rules.d/audit.rules
-	else
-		grep -v 'b64' ./config/audit.rules > /etc/audit/audit.rules
-	fi
+	grep -v 'b64' ./config/audit.rules > /etc/audit/rules.d/audit.rules
+fi
+
+# Remove RHEL 6.6 /etc/audit/rules.d directory
+if [ -d /etc/audit/rules.d ]; then
+	rm -rf /etc/audit/rules.d
 fi
 
 #### FIREWALL CONFIGURATIONS (IPV4/IPV6)
@@ -352,73 +349,9 @@ else
 	fi
 fi
 
-# CAT I SECURITY ISSUES
-if [ -z "$QUIET" ]; then
-	echo
-	echo -e "\033[1mCAT I Security Issues\033[0m"
-	echo
-fi
+# SECURITY ISSUES
 echo >> $LOG
-echo "CAT I Security Issues" >> $LOG
-echo >> $LOG
-for i in `ls cat1/*.sh`; do 
-	if [ -z "$QUIET" ]; then
-		echo  "#### Executing Script: $i" | tee -a $LOG
-		sh $i 2>&1 | tee -a $LOG
-	else
-		echo "#### Executing Script: $i" >> $LOG
-		sh $i >> $LOG
-	fi
-done;
-
-# CAT II SECURITY ISSUES
-if [ -z "$QUIET" ]; then
-	echo
-	echo -e "\033[1mCAT II Security Issues\033[0m"
-	echo
-fi
-echo >> $LOG
-echo "CAT II Security Issues" >> $LOG
-echo >> $LOG
-for i in `ls cat2/*.sh`; do 
-	if [ -z "$QUIET" ]; then
-		echo  "#### Executing Script: $i" | tee -a $LOG
-		sh $i 2>&1 | tee -a $LOG
-	else
-		echo "#### Executing Script: $i" >> $LOG
-		sh $i >> $LOG
-	fi
-done;
-
-# CAT III SECURITY ISSUES
-if [ -z "$QUIET" ]; then
-	echo
-	echo -e "\033[1mCAT III Security Issues\033[0m"
-	echo
-fi
-echo >> $LOG
-echo "CAT III Security Issues" >> $LOG
-echo >> $LOG
-for i in `ls cat3/*.sh`; do 
-	if [ -z "$QUIET" ]; then
-		echo  "#### Executing Script: $i" | tee -a $LOG
-		sh $i 2>&1 | tee -a $LOG
-	else
-		echo "#### Executing Script: $i" >> $LOG
-		sh $i >> $LOG
-	fi
-done;
-
-# CAT IV SECURITY ISSUES
-if [ -z "$QUIET" ]; then
-	echo
-	echo -e "\033[1mCAT IV Security Issues\033[0m"
-	echo
-fi
-echo >> $LOG
-echo "CAT IV Security Issues" >> $LOG
-echo >> $LOG
-for i in `ls cat4/*.sh`; do 
+for i in `ls scripts/*.sh`; do 
 	if [ -z "$QUIET" ]; then
 		echo  "#### Executing Script: $i" | tee -a $LOG
 		sh $i 2>&1 | tee -a $LOG

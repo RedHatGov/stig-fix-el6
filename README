@@ -45,10 +45,7 @@ toggle_nousb.sh - toggles the 'nousb' kernel flag only
 toggle_udf.sh - toggles 'udf' mounting of DVDs (USGCB Blacklists udf) 
 toggle_usb.sh - toggles 'nousb' kernel flag and the mass storage kernel module
 config - Directory with some pre-STIGed configurations (auditd,iptables,system-auth-local,etc.) 
-cat1 - CAT I STIG Scripts
-cat2 - CAT II STIG Scripts
-cat3 - CAT III STIG Scripts
-cat4 - CAT IV STIG Scripts
+scripts - Hardening Scripts
 misc - NSA SNAC, GNOME, and Other miscellenous lockdown scripts
 manual - Manaully run (There be dragons here)
 backups - Backup copy of modified files to compare and restore configurations
