@@ -43,17 +43,17 @@ Run is logged in ```/var/log/stig-fix-YYYY-MM-DD.log```
 1. Hardening the BIOS configuration (Disable USB Booting, set administrative passwords, etc.)
 2. Enable Drive Encryption (LUKS on your LVM VG or Hardware-based FIPS 140-2 compliant)
 3. Partitioning the system to minimally include the following:
-  * /boot
-  * swap
-  * /
-  * /home
-  * /tmp
-  * /var
-  * /var/log
-  * /var/log/audit
-  * /var/www (Optional, Web Servers)
-  * /rhnsat (Optional, RHN Satellite 5.5 and earlier, 5.6 uses /var)
-  * /opt (Optional, Commercial Applications)
+  * ```/boot```
+  * ```swap```
+  * ```/```
+  * ```/home```
+  * ```/tmp```
+  * ```/var```
+  * ```/var/log```
+  * ```/var/log/audit```
+  * ```/var/www``` (Optional, Web Servers)
+  * ```/rhnsat``` (Optional, RHN Satellite 5.5 and earlier, 5.6 uses /var)
+  * ```/opt``` (Optional, Commercial Applications)
 4. Select a GRUB password (SHA512, using grub-crypt or during Install)
 5. Install a minimal installation (include rsyslog, ntp, aide, scrub, vlock, screen, logwatch, openswan, openscap, openscap-utils, dracut-fips) [RPM pulls the base requirements]
 6. Register a system with a patch server - either a disconnected RHN Satellite or local/web-based (preferably SSL) repository:
