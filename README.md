@@ -107,10 +107,10 @@ Run is logged in ```/var/log/stig-fix-YYYY-MM-DD.log```
 10. Add users with root access to the ```wheel``` group, for users with ssh access add them to the ```sshusers``` group.
 11. Review the manual scripts in (```/opt/stig-fix/manual```) - putting the kernel in FIPS 140-2 mode can cause various weaker authentication not to work (e.g. RHN Satellite is still using md5)
 12. The following scripts have been included for convenience (RPM Symbolic Links to scripts):
-  * /sbin/toggle_ipv6 (for IPv6 support - defualt is off)
-  * /sbin/toggle_udf (for mounting DVDs)
-  * /sbin/toggle_usb (for enabling and disabling USB storage)
-  * /sbin/toggle_nousb (for enabling USB Keyboards that don't work with the 'nousb' kernel option)
+  * ```/sbin/toggle_ipv6``` (for IPv6 support - defualt is off)
+  * ```/sbin/toggle_udf``` (for mounting DVDs)
+  * ```/sbin/toggle_usb``` (for enabling and disabling USB storage)
+  * ```/sbin/toggle_nousb``` (for enabling USB Keyboards that don't work with the ```nousb``` kernel option)
 13. Configure Firewalls/TCP_WRAPPERS:
   * Edit the iptables, ip6tables, hosts.allow, and hosts.deny as requried, copy any changes back to the ```./config/``` directory for iptables/ip6tables and modify ```cat2/gen006620.sh``` (TCP_WRAPPERS) to ensure changes are applied if the stig-fix command is run again.
 14. Install site approved monitoring tools and virus scan. Examples include, but are not limited to, the following:
