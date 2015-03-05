@@ -1,4 +1,4 @@
-# stig-fix-el6
+# hardening-script-el6
 
 ## About
 
