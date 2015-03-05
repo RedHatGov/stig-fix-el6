@@ -12,9 +12,7 @@ These scripts will harden a system to specifications that are based upon the the
      
 ## Content
 
-Scripts are designed to run out of ```/opt/stig-fix/``` on a preferably fresh
-installation of RHEL 6.4+ (RHEL 6.4 updated ```pam_lastlog.so``` to disable 
-inactive users.)
+Scripts are designed to run out of ```/opt/stig-fix/``` on a preferably fresh installation of RHEL 6.4+ (RHEL 6.4 updated ```pam_lastlog.so``` to disable inactive users.)
 
 * ```apply.sh``` - master script that runs scripts in cat1-cat4 and misc
 * ```checkpoint.sh``` - checkpoint the current configuration so re-running apply.sh will not squash changes
