@@ -2,16 +2,7 @@
 
 ## About
 
-DISA STIG Scripts to harden a system to the RHEL 6 STIG.
-
-This script is currently being used for bare metal systems
-see https://people.redhat.com/fcaviggi/stig-fix for the 
-associated kickstart. Work is being done to merge in AWS,
-Puppet, and Chef content.
-
-These scripts will harden a system to specifications that
-are based upon the the following hardening and specifications
-provided by the following projects:
+These scripts will harden a system to specifications that are based upon the the following hardening and specifications provided by the following projects:
 
 * [DISA RHEL 6 STIG V1 R2](http://iase.disa.mil/stigs/os/unix/red_hat.html)
 * [NIST 800-53 (USGCB) Content for RHEL 5](http://usgcb.nist.gov/usgcb/rhel_content.html)
