@@ -1,218 +1,230 @@
-# DISA STIG Audit Rules
-## Add keys to the audit rules below using the -k option to allow for more 
-## organized and quicker searches with the ausearch tool.  See auditctl(8) 
-## and ausearch(8) for more information.
+##
+## This file contains the a sample audit configuration intended to
+## meet the NISPOM Chapter 8 rules.
+##
+## This file should be saved as /etc/audit/audit.rules.
+##
+## For audit 1.6.5 and higher
+##
 
-# Remove any existing rules
+## Remove any existing rules
 -D
 
-# Increase kernel buffer size
+## Increase buffer size to handle the increased number of messages.
+## Feel free to increase this if the machine panic's
 -b 8192
 
-# Failure of auditd causes a kernel panic
+## Set failure mode to panic
 -f 2
 
-###########################
-## DISA STIG Audit Rules ##
-###########################
+## action (e.g., common network time), the system locale of the action,
+## the system entity that initiated or completed the action, the resources
+## involved, and the action involved.
 
-# Watch syslog configuration
--w /etc/syslog.conf
-
-# Watch PAM and authentication configuration
--w /etc/pam.d/
--w /etc/nsswitch.conf
-
-# Watch system log files
--w /var/log/messages
--w /var/log/audit/audit.log
--w /var/log/audit/audit[1-4].log
-
-# Watch audit configuration files
--w /etc/audit/auditd.conf -p wa
--w /etc/audit/audit.rules -p wa
-
-# Watch login configuration
--w /etc/login.defs
--w /etc/securetty
--w /etc/resolv.conf
-
-# Watch cron and at
--w /etc/at.allow
--w /etc/at.deny
--w /var/spool/at/
--w /etc/crontab
--w /etc/anacrontab
--w /etc/cron.allow
--w /etc/cron.deny
--w /etc/cron.d/
--w /etc/cron.hourly/
--w /etc/cron.weekly/
--w /etc/cron.monthly/
-
-# Watch shell configuration
--w /etc/profile.d/
--w /etc/profile
--w /etc/shells
--w /etc/bashrc
--w /etc/csh.cshrc
--w /etc/csh.login
-
-# Watch kernel configuration
--w /etc/sysctl.conf
--w /etc/modprobe.conf
-
-# Watch linked libraries
--w /etc/ld.so.conf -p wa
--w /etc/ld.so.conf.d/ -p wa
-
-# Watch init configuration
--w /etc/rc.d/init.d/
--w /etc/sysconfig/
--w /etc/inittab -p wa
--w /etc/rc.local
--w /etc/rc.sysinit
-
-# Watch filesystem and NFS exports
--w /etc/fstab
--w /etc/exports
-
-# Watch xinetd configuration
--w /etc/xinetd.conf
--w /etc/xinetd.d/
-
-# Watch TCP_WRAPPERS configuration
--w /etc/hosts.allow
--w /etc/hosts.deny
-
-# Watch sshd configuration
--w /etc/ssh/sshd_config
-
-# Audit system events
--a always,exit -F arch=b32 -S acct -S reboot -S sched_setparam -S sched_setscheduler -S setrlimit -S swapon 
--a always,exit -F arch=b64 -S acct -S reboot -S sched_setparam -S sched_setscheduler -S setrlimit -S swapon 
-
-# Audit any link creation
--a always,exit -F arch=b32 -S link -S symlink
--a always,exit -F arch=b64 -S link -S symlink
-
-##############################
-## NIST 800-53 Requirements ##
-##############################
-
-#2.6.2.4.1 Records Events that Modify Date and Time Information
--a always,exit -F arch=b32 -S adjtimex -S stime -S settimeofday -k time-change
--a always,exit -F arch=b32 -S clock_settime -k time-change
--a always,exit -F arch=b64 -S adjtimex -S settimeofday -k time-change
--a always,exit -F arch=b64 -S clock_settime -k time-change
+## Things that could affect time
+-a always,exit -F arch=b32 -S adjtimex,settimeofday,stime -F key=time-change
+-a always,exit -F arch=b64 -S adjtimex,settimeofday -F key=time-change
+-a always,exit -F arch=b32 -S clock_settime -F a0=0x0 -F key=time-change
+-a always,exit -F arch=b64 -S clock_settime -F a0=0x0 -F key=time-change
+# Introduced in 2.6.39, commented out because it can make false positives
+#-a always,exit -F arch=b32 -S clock_adjtime -F key=time-change
+#-a always,exit -F arch=b64 -S clock_adjtime -F key=time-change
 -w /etc/localtime -p wa -k time-change
 
-#2.6.2.4.2 Record Events that Modify User/Group Information
--w /etc/group -p wa -k identity
--w /etc/passwd -p wa -k identity
--w /etc/gshadow -p wa -k identity
--w /etc/shadow -p wa -k identity
--w /etc/security/opasswd -p wa -k identity
--w /etc/sudoers
+## Things that could affect system locale
+-a always,exit -F arch=b32 -S sethostname,setdomainname -F key=system-locale
+-a always,exit -F arch=b64 -S sethostname,setdomainname -F key=system-locale
+-w /etc/issue -p wa -k system-locale
+-w /etc/issue.net -p wa -k system-locale
+-w /etc/hosts -p wa -k system-locale
+-w /etc/sysconfig/network -p wa -k system-locale
+-a always,exit -F dir=/etc/NetworkManager/ -F perm=wa -F key=system-locale
 
-#2.6.2.4.3 Record Events that Modify the Systems Network Environment
--a always,exit -F arch=b32 -S sethostname -S setdomainname -k audit_network_modifications
--a always,exit -F arch=b64 -S sethostname -S setdomainname -k audit_network_modifications
--w /etc/issue -p wa -k audit_network_modifications
--w /etc/issue.net -p wa -k audit_network_modifications
--w /etc/hosts -p wa -k audit_network_modifications
--w /etc/sysconfig/network -p wa -k audit_network_modifications
+## Audit 1, 1(b) Successful and unsuccessful logons and logoffs.
+## This is covered by patches to login, gdm, and openssh
+## Might also want to watch these files if needing extra information
+#-w /var/log/tallylog -p wa -k logins
+#-w /var/run/faillock/ -p wa -k logins
+#-w /var/log/lastlog -p wa -k logins
+#-w /var/log/btmp -p wa -k logins
+#-w /var/run/utmp -p wa -k logins
 
-#2.6.2.4.4 Record Events that Modify the System Mandatory Access Controls
+## Audit 1, 1(c) Successful and unsuccessful accesses to
+## security-relevant objects and directories, including
+## creation, open, close, modification, and deletion.
+
+## unsuccessful creation
+-a always,exit -F arch=b32 -S creat,link,mknod,mkdir,symlink,mknodat,linkat,symlinkat -F exit=-EACCES -F key=creation
+-a always,exit -F arch=b64 -S mkdir,creat,link,symlink,mknod,mknodat,linkat,symlinkat -F exit=-EACCES -F key=creation
+-a always,exit -F arch=b32 -S link,mkdir,symlink,mkdirat -F exit=-EPERM -F key=creation
+-a always,exit -F arch=b64 -S mkdir,link,symlink,mkdirat -F exit=-EPERM -F key=creation
+
+## unsuccessful open
+-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F exit=-EACCES -F key=open
+-a always,exit -F arch=b64 -S open,openat,open_by_handle_at -F exit=-EACCES -F key=open
+-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F exit=-EPERM -F key=open
+-a always,exit -F arch=b64 -S open,openat,open_by_handle_at -F exit=-EPERM -F key=open
+
+## unsuccessful close
+-a always,exit -F arch=b32 -S close -F exit=-EIO -F key=close
+-a always,exit -F arch=b64 -S close -F exit=-EIO -F key=close
+
+## unsuccessful modifications
+-a always,exit -F arch=b32 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EACCES -F key=mods
+-a always,exit -F arch=b64 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EACCES -F key=mods
+-a always,exit -F arch=b32 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EPERM -F key=mods
+-a always,exit -F arch=b64 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EPERM -F key=mods
+
+## unsuccessful deletion
+-a always,exit -F arch=b32 -S unlink,rmdir,unlinkat -F exit=-EACCES -F key=delete
+-a always,exit -F arch=b64 -S rmdir,unlink,unlinkat -F exit=-EACCES -F key=delete
+-a always,exit -F arch=b32 -S unlink,rmdir,unlinkat -F exit=-EPERM -F key=delete
+-a always,exit -F arch=b64 -S rmdir,unlink,unlinkat -F exit=-EPERM -F key=delete
+
+## Audit 1, 1(d) Changes in user authenticators.
+## Covered by patches to libpam, passwd, and shadow-utils
+## Might also want to watch these files for changes
+-w /etc/group -p wa -k auth
+-w /etc/passwd -p wa -k auth
+-w /etc/gshadow -p wa -k auth
+-w /etc/shadow -p wa -k auth
+-w /etc/security/opasswd -p wa -k auth
+
+## Audit 1, 1(e) The blocking or blacklisting of a user ID,
+## terminal, or access port and the reason for the action.
+## Covered by patches to pam_tally2 or pam_faillock and pam_limits
+
+## Audit 1, 1(f) Denial of access resulting from an excessive
+## number of unsuccessful logon attempts.
+## Covered by patches to pam_tally2 or pam_faillock
+
+## Audit 1, 2 Audit Trail Protection. The contents of audit trails
+## shall be protected against unauthorized access, modification,
+## or deletion.
+## This should be covered by file permissions, but we can watch it
+## to see any activity
+-w /var/log/audit/ -k audit-logs
+
+## Not specifically required by NISPOM; but common sense items
+## Optional - could indicate someone trying to do something bad or
+## just debugging
+#-a always,exit -F arch=b32 -S ptrace -F key=tracing
+#-a always,exit -F arch=b64 -S ptrace -F key=tracing
+#-a always,exit -F arch=b32 -S ptrace -F a0=0x4 -F key=code-injection
+#-a always,exit -F arch=b64 -S ptrace -F a0=0x4 -F key=code-injection
+#-a always,exit -F arch=b32 -S ptrace -F a0=0x5 -F key=data-injection
+#-a always,exit -F arch=b64 -S ptrace -F a0=0x5 -F key=data-injection
+#-a always,exit -F arch=b32 -S ptrace -F a0=0x6 -F key=register-injection
+#-a always,exit -F arch=b64 -S ptrace -F a0=0x6 -F key=register-injection
+
+## Optional - might want to watch module insertion
+#-w /sbin/insmod -p x -k modules
+#-w /sbin/rmmod -p x -k modules
+#-w /sbin/modprobe -p x -k modules
+#-a always,exit -F arch=b32 -S init_module,finit_module -F key=module-load
+#-a always,exit -F arch=b64 -S init_module,finit_module -F key=module-load
+#-a always,exit -F arch=b32 -S delete_module -F key=module-unload
+#-a always,exit -F arch=b64 -S delete_module -F key=module-unload
+
+## Optional - admin may be abusing power by looking in user's home dir
+#-a always,exit -F dir=/home -F uid=0 -F auid>=1000 -F auid!=4294967295 -C auid!=obj_uid -F key=power-abuse
+
+## Optional - log container creation
+#-a always,exit -F arch=b32 -S clone -F a0&0x2080505856 -F key=container-create
+#-a always,exit -F arch=b64 -S clone -F a0&0x2080505856 -F key=container-create
+
+## Optional - watch for containers that may change their configuration
+#-a always,exit -F arch=b32 -S unshare,setns -F key=container-config
+#-a always,exit -F arch=b64 -S unshare,setns -F key=container-config
+
+## Put your own watches after this point
+# -w /your-file -p rwxa -k mykey
+
+## DISA STIG rules
+-a always,exit -F arch=b64 -S settimeofday -k audit_time_rules
+-a always,exit -F arch=b64 -S clock_settime -k audit_time_rules
 -w /etc/selinux/ -p wa -k MAC-policy
+-a always,exit -F arch=b64 -S chmod -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S chmod -F auid=0 -k perm_mod
+-a always,exit -F arch=b32 -S chmod -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S chmod -F auid=0 -k perm_mod
 
-#2.6.2.4.5 Ensure auditd Collects Logon and Logout Events
--w /var/log/faillog -p wa -k logins
--w /var/log/lastlog -p wa -k logins
+-a always,exit -F arch=b32 -S chown -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S chown -F auid=0 -k perm_mod
+-a always,exit -F arch=b64 -S chown -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S chown -F auid=0 -k perm_mod
 
-#2.6.2.4.6 Ensure auditd Collects Process and Session Initiation Information
--w /var/run/utmp -p wa -k session
--w /var/log/btmp -p wa -k session
--w /var/log/wtmp -p wa -k session
+-a always,exit -F arch=b32 -S fchmod -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S fchmod -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S fchmod -F auid=0 -k perm_mod
+-a always,exit -F arch=b64 -S fchmod -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S fchmod -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S fchmod -F auid=0 -k perm_mod
 
-#2.6.2.4.7 Ensure auditd Collects Discretionary Access Control Permission Modification Events
--a always,exit -F arch=b32 -S chmod -S fchmod -S fchmodat -F auid>=500 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b32 -S chown -S fchown -S fchownat -S lchown -F auid>=500 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b32 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=500 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b64 -S chmod -S fchmod -S fchmodat -F auid>=500 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b64 -S chown -S fchown -S fchownat -S lchown -F auid>=500 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b64 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S fchmodat -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S fchmodat -F auid=0 -k perm_mod
+-a always,exit -F arch=b32 -S fchmodat -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S fchmodat -F auid=0 -k perm_mod
 
-#2.6.2.4.8 Ensure auditd Collects Unauthorized Access Attempts to Files (unsuccessful)
--a always,exit -F arch=b32 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EACCES -F auid>=500 -F auid!=4294967295 -k access
--a always,exit -F arch=b32 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EPERM -F auid>=500 -F auid!=4294967295 -k access
--a always,exit -F arch=b64 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EACCES -F auid>=500 -F auid!=4294967295 -k access
--a always,exit -F arch=b64 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EPERM -F auid>=500 -F auid!=4294967295 -k access
 
-#2.6.2.4.9 Ensure auditd Collects Information on the Use of Privileged Commands
--a always,exit -F path=/bin/ping -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/bin/umount -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/bin/mount -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/bin/su -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/bin/chgrp -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/bin/ping6 -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/sbin/pam_timestamp_check -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/sbin/unix_chkpwd -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/sbin/pwck -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/sbin/suexec -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/sbin/useradd -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/sbin/userdel -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/sbin/usermod -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/sbin/newusers -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/sbin/groupadd -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/sbin/groupdel -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/sbin/groupmod -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/sbin/semanage -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/sbin/usernetctl -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/sbin/ccreds_validate -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/sbin/userhelper -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/Xorg -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/rlogin -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/sudoedit -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/at -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/rsh -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/kgrantpty -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/crontab -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/staprun -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/rcp -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/chfn -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/setfacl -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/chacl -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/chcon -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/newrole -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
--a always,exit -F path=/usr/bin/kpac_dhcp_helper -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged
+-a always,exit -F arch=b64 -S fchown -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S fchown -F auid=0 -k perm_mod
+-a always,exit -F arch=b32 -S fchown -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S fchown -F auid=0 -k perm_mod
 
-#2.6.2.4.10 Ensure auditd Collects Information on Exporting to Media (successful)
--a always,exit -F arch=b32 -S mount -F auid>=500 -F auid!=4294967295 -k export
+-a always,exit -F arch=b64 -S fchownat -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S fchownat -F auid=0 -k perm_mod
+-a always,exit -F arch=b32 -S fchownat -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S fchownat -F auid=0 -k perm_mod
+
+-a always,exit -F arch=b64 -S fremovexattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S fremovexattr -F auid=0 -k perm_mod
+-a always,exit -F arch=b32 -S fremovexattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S fremovexattr -F auid=0 -k perm_mod
+
+-a always,exit -F arch=b64 -S fsetxattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S fsetxattr -F auid=0 -k perm_mod
+-a always,exit -F arch=b32 -S fsetxattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S fsetxattr -F auid=0 -k perm_mod
+
+-a always,exit -F arch=b64 -S lchown -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S lchown -F auid=0 -k perm_mod
+-a always,exit -F arch=b32 -S lchown -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S lchown -F auid=0 -k perm_mod
+
+-a always,exit -F arch=b64 -S lremovexattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S lremovexattr -F auid=0 -k perm_mod
+-a always,exit -F arch=b32 -S lremovexattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S lremovexattr -F auid=0 -k perm_mod
+
+-a always,exit -F arch=b64 -S lsetxattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S lsetxattr -F auid=0 -k perm_mod
+-a always,exit -F arch=b32 -S lsetxattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S lsetxattr -F auid=0 -k perm_mod
+
+-a always,exit -F arch=b64 -S removexattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S removexattr -F auid=0 -k perm_mod
+-a always,exit -F arch=b32 -S removexattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S removexattr -F auid=0 -k perm_mod
+
+-a always,exit -F arch=b64 -S setxattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S setxattr -F auid=0 -k perm_mod
+-a always,exit -F arch=b32 -S setxattr -F auid>=500 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S setxattr -F auid=0 -k perm_mod
+
 -a always,exit -F arch=b64 -S mount -F auid>=500 -F auid!=4294967295 -k export
+-a always,exit -F arch=b64 -S mount -F auid=0 -k export
 
-#2.6.2.4.11 Ensure auditd Collects Files Deletion Events by User (successful and unsuccessful)
--a always,exit -F arch=b32 -S unlink -S rmdir -S unlinkat -S rename -S renameat -F auid>=500 -F auid!=4294967295 -k delete
--a always,exit -F arch=b64 -S unlink -S rmdir -S unlinkat -S rename -S renameat -F auid>=500 -F auid!=4294967295 -k delete
--a always,exit -F arch=b32 -S rmdir -S unlink -S unlinkat -S rename -S renameat -F auid=0 -k delete 
--a always,exit -F arch=b64 -S rmdir -S unlink -S unlinkat -S rename -S renameat -F auid=0 -k delete 
+-a always,exit -F arch=b64 -S rmdir -S unlink -S unlinkat -S rename -S renameat -F auid>=500 -F auid!=4294967295 -k delete
+-a always,exit -F arch=b64 -S rmdir -S unlink -S unlinkat -S rename -S renameat -F auid=0 -k delete
 
-#2.6.2.4.12 Ensure auditd Collects System Administrator Actions
+-a always,exit -F arch=b64 -S adjtimex -k audit_time_rules
+
 -w /etc/sudoers -p wa -k actions
-
-#2.6.2.4.13 Make the auditd Configuration Immutable
 -w /sbin/insmod -p x -k modules
 -w /sbin/rmmod -p x -k modules
 -w /sbin/modprobe -p x -k modules
--a always,exit -F arch=b32 -S init_module -S delete_module -k modules
 -a always,exit -F arch=b64 -S init_module -S delete_module -k modules
 
-#2.6.2.4.14 Make the auditd Configuration Immutable
--e 2
+## Make the configuration immutable
+#-e 2
